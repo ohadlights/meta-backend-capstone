@@ -43,14 +43,25 @@ jobs:
     - name: Install dependencies with pipenv
       run: pipenv install --dev
 
+    - name: Wait for MySQL to be ready
+      run: |
+        echo "Waiting for MySQL..."
+        until mysqladmin ping -h 127.0.0.1 -u root --password=root --silent; do
+          sleep 2
+        done
+
+    - name: Create database
+      run: |
+        mysql -h 127.0.0.1 -u root --password=root -e "CREATE DATABASE LittleLemon;"
+
     - name: Run migrations
       env:
-        DATABASE_URL: mysql://user:password@127.0.0.1:3306/test_db
+        DATABASE_URL: mysql://user:password@127.0.0.1:3306/LittleLemon
       run: |
         pipenv run python manage.py makemigrations
         pipenv run python manage.py migrate
 
     - name: Run tests
       env:
-        DATABASE_URL: mysql://user:password@127.0.0.1:3306/test_db
+        DATABASE_URL: mysql://user:password@127.0.0.1:3306/LittleLemon
       run: pipenv run python manage.py test
