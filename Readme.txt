@@ -1,2 +1,2 @@
-/restaurant/menu/
+restaurant/menu/
 restaurant/booking/
